@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Forkcast by Ainex — Smart restaurant finder</title>
+  <meta name="description" content="Forkcast by Ainex finds and ranks restaurants around you, live, as you travel." />
+  <meta name="author" content="Ainex · Joshua Mendoza" />
+  <meta name="theme-color" content="#13235C" />
+
+  <meta property="og:title" content="Forkcast by Ainex" />
+  <meta property="og:description" content="Smart food picks wherever you go." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ainex" />
+
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet (free map library) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ===== SVG icon sprite ===== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path fill="currentColor" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path fill="currentColor" d="M18.5 14.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></g></symbol>
+    <symbol id="i-nav" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 11 21 3l-8 18-2-8z"/></symbol>
+    <symbol id="i-crosshair" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></g></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 14.5h2"/></g></symbol>
+    <symbol id="i-glass" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l-.5 5a3.5 3.5 0 0 1-7 0z"/><path d="M12 11.5V20M8 21h8"/></g></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></g></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-fork" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 3v7a2 2 0 0 0 4 0V3M9 12v9M17 3c-1.7 0-3 2-3 5s1.3 4 3 4v9"/></symbol>
+    <symbol id="i-cup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 3v3M12 3v3"/></g></symbol>
+    <symbol id="i-burger" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 6 0 0 1 16 0z"/><path d="M3 14.5h18M5 18h14a0 0 0 0 1 0 0 2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/></g></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></g></symbol>
+  </svg>
+
+  <div class="app">
+    <!-- ===== Side panel / bottom sheet ===== -->
+    <aside class="panel" id="panel">
+      <div class="sheet-handle" id="sheetHandle" role="button" aria-label="Expand list"></div>
+
+      <header class="brand">
+        <img src="assets/logo.svg" alt="Forkcast logo" class="brand-logo" />
+        <div class="brand-text">
+          <h1>Forkcast
+            <a class="by-ainex" href="https://ainex.digital/" target="_blank" rel="noopener">by Ainex</a>
+          </h1>
+          <p>Smart food picks wherever you go</p>
+        </div>
+        <button class="live-toggle" id="liveToggle" aria-pressed="false">
+          <span class="live-dot"></span><span class="live-label">Go live</span>
+        </button>
+      </header>
+
+      <div class="status" id="status" data-state="idle">Loading map…</div>
+
+      <div class="controls">
+        <div class="segmented" id="sortTabs" role="tablist">
+          <button data-sort="best" class="active"><svg class="i"><use href="#i-sparkle"/></svg>Best</button>
+          <button data-sort="budget"><svg class="i"><use href="#i-wallet"/></svg>Budget</button>
+          <button data-sort="vibe"><svg class="i"><use href="#i-glass"/></svg>Vibe</button>
+          <button data-sort="near"><svg class="i"><use href="#i-nav"/></svg>Nearest</button>
+        </div>
+
+        <div class="chips" id="typeChips">
+          <button class="chip active" data-cat="all">All</button>
+          <button class="chip" data-cat="filipino">Filipino</button>
+          <button class="chip" data-cat="cafe">Cafés</button>
+          <button class="chip" data-cat="fast_food">Fast food</button>
+          <button class="chip" data-cat="japanese">Japanese</button>
+          <button class="chip" data-cat="korean">Korean</button>
+          <button class="chip" data-cat="chinese">Chinese</button>
+          <button class="chip" data-cat="pizza">Pizza</button>
+          <button class="chip" data-cat="seafood">Seafood</button>
+          <button class="chip" data-cat="bar">Bars</button>
+        </div>
+
+        <div class="row">
+          <label class="switch">
+            <input type="checkbox" id="openNow" />
+            <span class="track"></span>
+            Open now
+          </label>
+          <label class="range">
+            <span>Radius <output id="radiusOut">1.5 km</output></span>
+            <input type="range" id="radius" min="500" max="5000" step="250" />
+          </label>
+        </div>
+      </div>
+
+      <section class="ai-pick" id="aiPick" hidden></section>
+
+      <ul class="list" id="list">
+        <li class="empty">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="64" r="40" fill="#E8ECF8"/>
+            <circle cx="60" cy="64" r="28" fill="#fff" stroke="#C9D2EC" stroke-width="3"/>
+            <path d="M52 50v12a4 4 0 0 0 8 0V50M56 66v14M70 50c-3 0-5 3.5-5 8.5s2 6.5 5 6.5v15" fill="none" stroke="#13235C" stroke-width="3" stroke-linecap="round"/>
+            <path d="M92 18c-7 0-12 5.4-12 12 0 8.6 12 18 12 18s12-9.4 12-18c0-6.6-5-12-12-12z" fill="#FF6B3D"/>
+            <circle cx="92" cy="30" r="4" fill="#fff"/>
+          </svg>
+          <h3>Hungry on the road?</h3>
+          <p>Tap <strong>Go live</strong> and Forkcast will rank the food spots around you as you travel.</p>
+        </li>
+      </ul>
+
+      <p class="data-note">
+        Place data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.
+        Budget and Vibe are estimates, since OpenStreetMap has no ratings or prices.
+      </p>
+
+      <!-- ===== Ainex credit ===== -->
+      <footer class="credit">
+        <a class="credit-brand" href="https://ainex.digital/" target="_blank" rel="noopener">
+          <img src="assets/ainex-mark.png" alt="" onerror="this.style.display='none'" />
+          <span>A product by <strong>Ainex</strong></span>
+        </a>
+        <nav>
+          <a href="https://ainex.digital/htmls/contact.html" target="_blank" rel="noopener">Contact</a>
+          <a href="https://ainex.digital/htmls/privacy-policy.html" target="_blank" rel="noopener">Privacy</a>
+        </nav>
+      </footer>
+    </aside>
+
+    <!-- ===== Map ===== -->
+    <main class="map-wrap">
+      <div id="map"></div>
+      <button class="search-area" id="searchArea" hidden>
+        <svg class="i"><use href="#i-search"/></svg>Search this area
+      </button>
+      <button class="fab" id="recenter" title="Back to my location" aria-label="Back to my location">
+        <svg class="i"><use href="#i-crosshair"/></svg>
+      </button>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
